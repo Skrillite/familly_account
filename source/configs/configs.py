@@ -3,7 +3,7 @@ from db.configs import PotgresConfig
 
 
 class ExternalServices:
-    user_data_service_url = 'localhost:0000'
+    user_data_service_url = 'localhost:56723'
 
 
 class ApplicationConfigs:

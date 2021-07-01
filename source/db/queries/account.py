@@ -20,13 +20,15 @@ async def delete_account(session: AsyncSession, data: UserID):
         account_id = select(DBMembers.account_id).where(DBMembers.user_id == data.user_id).scalar_subquery()
 
         await session.execute(
-            delete(DBMembers).where(DBMembers.account_id == account_id)
-            .execution_options(synchronize_session=False)
-        )
-
-        await session.execute(
             delete(DBPayment)
                 .where(DBPayment.account_id == DBMembers.account_id)
                 .where(DBMembers.user_id == data.user_id)
                 .execution_options(synchronize_session=False)
         )
+
+        await session.execute(
+            delete(DBMembers).where(DBMembers.account_id == account_id)
+            .execution_options(synchronize_session=False)
+        )
+
+

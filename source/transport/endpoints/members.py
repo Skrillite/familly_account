@@ -3,7 +3,7 @@ from sanic import Request, Sanic
 import aiohttp
 
 from db import queries, DataBase
-from api.requests import NewUserID
+from api.requests import ChangingUser
 from configs import ApplicationConfigs
 
 
@@ -12,9 +12,9 @@ class Members(HTTPMethodView):
         self.db: DataBase = Sanic.get_app(ApplicationConfigs.sanic.NAME).ctx.db.get()
 
     async def post(self, requset: Request):
-        data: NewUserID = NewUserID.parse_obj(requset.json)
+        data: ChangingUser = ChangingUser.parse_obj(requset.json)
 
-        account_id: int = await queries.new_member(self.db.session_factory(), data.user_id, data.new_user_id)
+        account_id: int = await queries.create_member(self.db.session_factory(), data.user_id, data.new_user_id)
         payment_methods: tuple = await queries.get_payment_method(self.db.session_factory(), account_id)
 
         async with aiohttp.ClientSession() as session:
@@ -24,3 +24,7 @@ class Members(HTTPMethodView):
             ) as resp:
                 await resp.text()
 
+    async def delete(self, request: Request):
+        data: ChangingUser = ChangingUser.parse_obj(request.json)
+
+        account_id: int = await queries.delete_member()
