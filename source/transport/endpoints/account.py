@@ -17,3 +17,10 @@ class Account(HTTPMethodView):
 
         await queries.create_account(self.db.make_session(), data)
         return raw('', status=201)
+
+    async def delete(self, request: Request):
+        data: UserID = UserID.parse_obj(request.json)
+
+        await queries.delete_account(self.db.make_session(), data)
+
+        return raw('')
