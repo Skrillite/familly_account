@@ -5,5 +5,5 @@ from . import (
 
 def get_routes():
     return (
-        (Account, '/account')
+        (Account.as_view(), '/account'),
     )
