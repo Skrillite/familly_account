@@ -15,7 +15,7 @@ class Members(HTTPMethodView):
         data: ChangingUser = ChangingUser.parse_obj(requset.json)
 
         account_id: int = await queries.create_member(self.db.session_factory(), data.user_id, data.new_user_id)
-        payment_methods: tuple = await queries.get_payment_method(self.db.session_factory(), account_id)
+        payment_methods: tuple = await queries.get_payment_methods(self.db.session_factory(), account_id)
 
         async with aiohttp.ClientSession() as session:
             async with session.post(
@@ -27,4 +27,12 @@ class Members(HTTPMethodView):
     async def delete(self, request: Request):
         data: ChangingUser = ChangingUser.parse_obj(request.json)
 
-        account_id: int = await queries.delete_member()
+        account_id: int = await queries.delete_member(self.db.session_factory(), data.user_id)
+        payment_methods: tuple = await queries.get_payment_methods(self.db.session_factory(), data.new_user_id)
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                url=ApplicationConfigs.ext.user_data_service_url,
+                json=payment_methods
+            ) as resp:
+                await resp.text()
