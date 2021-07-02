@@ -1,0 +1,197 @@
+openapi: "3.0.0"
+info:
+  title: "Family account"
+  description: "Сommon method of payment for a group of people"
+  version: 1.1.0
+
+paths:
+  /account/{user_id}:
+    post:
+      parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          $ref: "#/components/schemas/BaseRequestData"
+      responses:
+        "201":
+          description: "acount has been created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountID"
+        "403":
+          description: "account has already been created"
+          
+    delete:
+      parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          $ref: "#/components/schemas/BaseRequestData"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountID"
+        "403":
+          description: "no permission"
+          content:
+            application/json:
+              schema:
+                type: string
+                
+  /add_member:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserData"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            applicatin/json:
+              schema:              
+                $ref: "#/components/schemas/UserID"
+          
+        "400":
+          description: "invalid data or user has already joined in the group"
+        "404":
+          description: "User with this id does not exist"
+          
+  /delete_member/{user_id}:
+    parameters:
+      - in: path
+        name: user_id
+        required: true
+        schema:
+          $ref: "#/components/schemas/UserID"
+    delete:
+      responses:
+        "204":
+          description: "Ok"
+          
+        "400":
+          description: "this user not in the group"
+          content:
+            application/json:
+              schema:
+                type: string
+                
+        "403":
+          description: "no right to delete this user"
+          content:
+            application/json:
+              schema:
+                type: string
+          
+  /add_payment_method:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentID"
+              
+      responses:
+        "204":
+          description: "Ok"
+          
+        "400":
+          description: "payment method was not found"
+          content:
+            application/json:
+              schema:
+                type: string
+                
+  /delete_payment_method/{payment_id}:
+    parameters:
+    - in: path
+      name: payment_id
+      required: true
+      schema:
+        $ref: "#/components/schemas/PaymentID"
+    delete:
+      responses:
+        "204":
+          description: "Ok"
+          
+        "400":
+          description: "payment method was not linked"
+          content:
+            application/json:
+              schema:
+                type: string
+              
+components:
+  schemas:
+    BaseRequestData:
+      type: object
+      properties:
+        requesting_user_id:
+          type: integer
+    
+    MemberRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseRequestData'
+      properties:
+        changing_member_id:
+          type: integer
+          
+    PaymentRequest:
+      allOf:
+        - $ref: '#/components/schemas/BaseRequestData'
+      properties:
+        changing_payment_method_id:
+          type: integer
+  
+    UserData:
+      type: object
+      additionalProperties: false
+      properties:
+        phone:
+          type: integer
+          minimum: 11
+          maximum: 11
+          
+        fullName:
+          type: string
+      
+      required:
+        - phone
+        - fullName
+      
+    AccountID:
+      type: object
+      additionalProperties: false
+      properties:
+        account_id:
+          type: integer
+          
+      required:
+        - account_id
+        
+    UserID:
+      type: object
+      additionalProperties: false
+      properties:
+        user_id:
+          type: integer
+      
+      required:
+        - user_id
+  
+    PaymentID:
+      type: object
+      additionalProperties: false
+      properties:
+        payment_id:
+          type: integer
+          
+      required:
+        - payment_id
