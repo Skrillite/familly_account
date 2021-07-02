@@ -3,10 +3,10 @@ from sqlalchemy.orm import Query
 from sqlalchemy import delete, select
 
 from db.models import DBMembers, DBPayment
-from api.requests import UserID, AccountID
+from api.requests import BaseRequestData, AccountID
 
 
-async def create_account(session: AsyncSession, data: UserID):
+async def create_account(session: AsyncSession, data: BaseRequestData):
     async with session.begin():
         session.add(
             DBMembers(
@@ -15,7 +15,7 @@ async def create_account(session: AsyncSession, data: UserID):
         )
 
 
-async def delete_account(session: AsyncSession, data: UserID):
+async def delete_account(session: AsyncSession, data: BaseRequestData):
     async with session.begin():
         account_id = select(DBMembers.account_id).where(DBMembers.user_id == data.user_id).scalar_subquery()
 

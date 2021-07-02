@@ -1,8 +1,9 @@
 from pydantic import BaseModel
 
 
-class UserID(BaseModel):
+class BaseRequestData(BaseModel):
     user_id: int
 
-class AccountID(BaseModel):
+
+class AccountID(BaseRequestData):
     account_id: int

@@ -1,6 +1,5 @@
-from pydantic import BaseModel
+from .account import BaseRequestData
 
 
-class ChangingUser(BaseModel):
-    user_id: int
-    new_user_id: int
+class ChangingUser(BaseRequestData):
+    changing_user_id: int
