@@ -8,3 +8,4 @@ class DBMembers(BaseModel):
 
     user_id = Column(Integer, primary_key=True)
     account_id = Column(Integer, Identity(), nullable=False)
+

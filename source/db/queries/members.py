@@ -2,19 +2,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, insert, delete
 
 from db.models import DBMembers, DBPayment
+from api.requests import ChangingUser
 
 
-async def create_member(session: AsyncSession, admin_id, new_user_id) -> int:
+async def create_member(session: AsyncSession, data: ChangingUser) -> int:
     async with session.begin():
-        accout_id, = (await session.execute(
+        account_id, = (await session.execute(
             insert(DBMembers).from_select([DBMembers.user_id, DBMembers.account_id],
-                                          select(new_user_id, DBMembers.account_id)
-                                          .where(DBMembers.user_id == admin_id))
+                                          select(data.changing_user_id, DBMembers.account_id)
+                                          .where(DBMembers.user_id == data.requesting_user_id))
                 .returning(DBMembers.account_id)
                 .execution_options(synchronize_session=False)
         )).fetchone()
 
-        return accout_id
+        return account_id
 
 
 async def delete_member(session: AsyncSession, deleting_user_id) -> int:
@@ -30,10 +31,20 @@ async def delete_member(session: AsyncSession, deleting_user_id) -> int:
         return account_id
 
 
-async def get_payment_methods(session: AsyncSession, account_id: int) -> tuple:
+async def account_id_by_member(session: AsyncSession, user_id: int) -> int:
     async with session.begin():
-        methods = (await session.execute(
-            select(DBPayment.payment_method_id).where(DBPayment.account_id == account_id)
-        )).all()
+        account_id, = (await session.execute(
+            select(DBMembers.account_id).where(DBMembers.user_id == user_id)
+        )).fetchone()
 
-        return methods
+    return account_id
+
+
+async def members_by_account_id(session: AsyncSession, account_id: int) -> list[int]:
+    async with session.begin():
+        user_ids = await session.execute(
+            select(DBMembers.user_id).where(DBMembers.account_id == account_id)
+        )
+        user_ids = [i for i, in user_ids.all()]
+
+    return user_ids

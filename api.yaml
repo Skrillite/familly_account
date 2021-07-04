@@ -15,7 +15,7 @@ paths:
           $ref: "#/components/schemas/BaseRequestData"
       responses:
         "201":
-          description: "acount has been created"
+          description: "account has been created"
           content:
             application/json:
               schema:

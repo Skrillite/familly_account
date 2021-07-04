@@ -7,4 +7,4 @@ class DBPayment(BaseModel):
     __tablename__ = 'payment_methods'
 
     account_id = Column(Integer, primary_key=True)
-    payment_method_id = Column(Integer, ForeignKey('members.account_id'), unique=True)
+    payment_method_id = Column(Integer, primary_key=True)

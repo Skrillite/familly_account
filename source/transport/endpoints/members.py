@@ -11,11 +11,11 @@ class Members(HTTPMethodView):
     def __init__(self):
         self.db: DataBase = Sanic.get_app(ApplicationConfigs.sanic.NAME).ctx.db.get()
 
-    async def post(self, requset: Request):
-        data: ChangingUser = ChangingUser.parse_obj(requset.json)
+    async def post(self, request: Request):
+        data: ChangingUser = ChangingUser.parse_obj(request.json)
 
-        account_id: int = await queries.create_member(self.db.session_factory(), data.user_id, data.changing_user_id)
-        payment_methods: tuple = await queries.get_payment_methods(self.db.session_factory(), account_id)
+        account_id: int = await queries.create_member(self.db.session_factory(), data)
+        payment_methods: set = await queries.get_payment_methods(self.db.session_factory(), account_id)
 
         async with aiohttp.ClientSession() as session:
             async with session.post(
@@ -28,7 +28,7 @@ class Members(HTTPMethodView):
         data: ChangingUser = ChangingUser.parse_obj(request.json)
 
         account_id: int = await queries.delete_member(self.db.session_factory(), data.changing_user_id)
-        payment_methods: tuple = await queries.get_payment_methods(self.db.session_factory(), account_id)
+        payment_methods: set = await queries.get_payment_methods(self.db.session_factory(), account_id)
 
         async with aiohttp.ClientSession() as session:
             async with session.post(
