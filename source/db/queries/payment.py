@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, delete
 
 from db.models import DBPayment
 
@@ -11,6 +11,13 @@ async def add_payment_method(session: AsyncSession, account_id: int, payment_id:
                 account_id=account_id,
                 payment_method_id=payment_id
             )
+        )
+
+
+async def delete_payment_method(session: AsyncSession, account_id: int, payment_id: int):
+    async with session.begin():
+        await session.execute(
+            delete(DBPayment).where(DBPayment.payment_method_id == payment_id)
         )
 
 

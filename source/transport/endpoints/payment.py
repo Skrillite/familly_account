@@ -29,4 +29,21 @@ class payment(HTTPMethodView):
                     if resp.status != 200:
                         raise Exception # TODO
 
-        return raw('', status=200)
+        return raw('', status=201)
+
+    async def delete(self, request: Request):
+        data: PaymentMethod = PaymentMethod.parse_obj(request.json)
+
+        account_id: int = await queries.account_id_by_member(self.db.session_factory(), data.requesting_user_id)
+        await queries.delete_payment_method(self.db.session_factory(), account_id, data.payment_method_id)
+
+        user_ids: list[int] = await queries.members_by_account_id(self.db.session_factory(), account_id)
+
+        async with aiohttp.ClientSession() as session:
+            for user in user_ids:
+                async with session.delete(
+                    url=ApplicationConfigs.ext.user_data_service_url,
+                    json=data.payment_method_id
+                ) as resp:
+                    if resp.status != 200:
+                        raise Exception # TODO
