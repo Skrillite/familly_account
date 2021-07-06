@@ -45,20 +45,21 @@ class Test_DBQueries:
     @pytest.mark.asyncio
     @pytest.mark.parametrize('id', admins_ids)
     async def test_new_account(self, id: int):
-        session: AsyncSession = pytest.ctx.db.get().make_session()
+        session_1: AsyncSession = pytest.ctx.db.get().make_session()
+        session_2: AsyncSession = pytest.ctx.db.get().make_session()
 
-        async with session.begin():
-            before = (await session.execute(
+        async with session_1.begin():
+            before = (await session_1.execute(
                 select(DBMembers.user_id)
             )).all()
 
             await queries.create_account(
-                session,
+                session_2,
                 BaseRequestData.parse_obj({
                     'requesting_user_id': id
                 }))
 
-            after = (await session.execute(
+            after = (await session_1.execute(
                 select(DBMembers.user_id)
             )).all()
 
@@ -67,18 +68,19 @@ class Test_DBQueries:
     @pytest.mark.asyncio
     @pytest.mark.parametrize('requesting_user_id, new_user_id', members_ids)
     async def test_new_member(self, requesting_user_id, new_user_id):
-        session: AsyncSession = pytest.ctx.db.get().make_session()
+        session_1: AsyncSession = pytest.ctx.db.get().make_session()
+        session_2: AsyncSession = pytest.ctx.db.get().make_session()
 
-        async with session.begin():
+        async with session_1.begin():
             await queries.create_member(
-                session,
+                session_2,
                 ChangingUser.parse_obj({
                     'requesting_user_id': requesting_user_id,
                     'changing_user_id': new_user_id
                 })
             )
 
-            nui, = (await session.execute(
+            nui, = (await session_1.execute(
                 select(DBMembers.user_id).where(DBMembers.user_id == new_user_id)
             )).fetchone()
 
@@ -87,16 +89,17 @@ class Test_DBQueries:
     @pytest.mark.asyncio
     @pytest.mark.parametrize('requesting_user_id, payment_id', payment_methods)
     async def test_new_payment_method(self, requesting_user_id, payment_id):
-        session: AsyncSession = pytest.ctx.db.get().make_session()
+        session_1: AsyncSession = pytest.ctx.db.get().make_session()
+        session_2: AsyncSession = pytest.ctx.db.get().make_session()
 
-        async with session.begin():
-            before = (await session.execute(
+        async with session_1.begin():
+            before = (await session_1.execute(
                 select(DBPayment.payment_method_id).where(DBPayment.payment_method_id == payment_id)
             )).fetchone()
 
-            await queries.add_payment_method(session, requesting_user_id, payment_id)
+            await queries.add_payment_method(session_2, requesting_user_id, payment_id)
 
-            after, = (await session.execute(
+            after, = (await session_1.execute(
                 select(DBPayment.payment_method_id).where(DBPayment.payment_method_id == payment_id)
             )).fetchone()
 
