@@ -16,7 +16,7 @@ def configure_app() -> Sanic:
         app.add_route(*route)
 
     app.ctx.db = ContextVar('db_context')
-    app.ctx.di = ContextVar('dep injection')
+    app.ctx.di: ContextVar[DI] = ContextVar('dep injection')
 
     init_db_posgresql(app.ctx.db)
     init_di(app.ctx.di)

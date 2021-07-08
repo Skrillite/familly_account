@@ -7,6 +7,8 @@ from db.database import DataBase
 from db import queries
 from db.queries.queryDI import DBQueryDI
 from service.DI import DI
+from transport.external_queries.query_interfaces import ExtQueriesDI
+from transport import external_queries
 
 
 def init_db_posgresql(database_context: ContextVar, test_db=False):
@@ -32,8 +34,13 @@ def init_di(di: ContextVar):
     dbq = DBQueryDI()
     dbq.create_account = queries.create_account
     dbq.delete_account = queries.delete_account
+    dbq.create_member = queries.create_member
+    dbq.delete_member = queries.delete_member
+    dbq.get_payment_method_by_account_id = queries.get_payment_methods
 
-    extq = None
+    extq = ExtQueriesDI()
+    extq.add_payment_methods = external_queries.add_payment_method
+    extq.delete_payment_methods = external_queries.delete_payment_method
 
     di.set(DI())
     di.get().db_queries = dbq

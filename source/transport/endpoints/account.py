@@ -5,7 +5,7 @@ from sanic.response import raw
 from db.database import DataBase
 from api.requests import BaseRequestData
 from configs import ApplicationConfigs
-from service.account import Account
+from service.account import create_account, delete_account
 from service.DI import DI
 
 
@@ -17,12 +17,12 @@ class AccountRoutes(HTTPMethodView):
     async def post(self, request: Request):
         data: BaseRequestData = BaseRequestData.parse_obj(request.json)
 
-        await Account.create_account(self.di, self.db.make_session(), data)
+        await create_account(self.di, self.db.session_factory, data)
         return raw('', status=201)
 
     async def delete(self, request: Request):
         data: BaseRequestData = BaseRequestData.parse_obj(request.json)
 
-        await Account.delete_account(self.di, self.db.make_session(), data)
+        await delete_account(self.di, self.db.session_factory, data)
 
         return raw('', status=200)

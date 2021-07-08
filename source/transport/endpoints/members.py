@@ -1,8 +1,9 @@
 from sanic.views import HTTPMethodView
 from sanic import Request, Sanic
-import aiohttp
 
-from db import queries, DataBase
+import service
+from service.DI import DI
+from db import DataBase
 from api.requests import ChangingUser
 from configs import ApplicationConfigs
 
@@ -10,29 +11,14 @@ from configs import ApplicationConfigs
 class Members(HTTPMethodView):
     def __init__(self):
         self.db: DataBase = Sanic.get_app(ApplicationConfigs.sanic.NAME).ctx.db.get()
+        self.di: DI = Sanic.get_app(ApplicationConfigs.sanic.NAME).ctx.di.get()
 
     async def post(self, request: Request):
         data: ChangingUser = ChangingUser.parse_obj(request.json)
 
-        account_id: int = await queries.create_member(self.db.session_factory(), data)
-        payment_methods: set = await queries.get_payment_methods(self.db.session_factory(), account_id)
-
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                    url=ApplicationConfigs.ext.user_data_service_url,
-                    json=payment_methods
-            ) as resp:
-                await resp.text()
+        await service.add_member(self.di, self.db.session_factory, data)
 
     async def delete(self, request: Request):
         data: ChangingUser = ChangingUser.parse_obj(request.json)
 
-        account_id: int = await queries.delete_member(self.db.session_factory(), data.changing_user_id)
-        payment_methods: set = await queries.get_payment_methods(self.db.session_factory(), account_id)
-
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                url=ApplicationConfigs.ext.user_data_service_url,
-                json=payment_methods
-            ) as resp:
-                await resp.text()
+        await service.delete_member(self.di, self.db.session_factory, data)

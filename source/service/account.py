@@ -4,12 +4,9 @@ from .DI import DI
 from api.dto import BaseRequestData
 
 
-class Account:
-    @staticmethod
-    async def create_account(dep: DI, db_connection, data: BaseRequestData):
-        await dep.db_queries.create_account(db_connection, data)
+async def create_account(dep: DI, db_connection_factory, data: BaseRequestData):
+    await dep.db_queries.create_account(db_connection_factory(), data)
 
-    @staticmethod
-    async def delete_account(dep: DI, db_connection, data: BaseRequestData):
-        await dep.db_queries.delete_account(db_connection, data)
 
+async def delete_account(dep: DI, db_connection_factory, data: BaseRequestData):
+    await dep.db_queries.delete_account(db_connection_factory(), data)
