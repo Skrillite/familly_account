@@ -1,4 +1,7 @@
 # Family account
+
+repos: https://github.com/Skrillite/familly_account
+
 ## Задача
 
 Общий способ оплаты для нескольких аккаунтов

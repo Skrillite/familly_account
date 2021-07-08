@@ -32,11 +32,18 @@ def init_db_posgresql(database_context: ContextVar, test_db=False):
 
 def init_di(di: ContextVar):
     dbq = DBQueryDI()
+
     dbq.create_account = queries.create_account
     dbq.delete_account = queries.delete_account
+
     dbq.create_member = queries.create_member
     dbq.delete_member = queries.delete_member
+    dbq.account_id_by_member = queries.account_id_by_member
+    dbq.members_by_account_id = queries.members_by_account_id
+
     dbq.get_payment_method_by_account_id = queries.get_payment_methods
+    dbq.add_payment_method = queries.add_payment_method
+    dbq.delete_payment_method = queries.delete_payment_method
 
     extq = ExtQueriesDI()
     extq.add_payment_methods = external_queries.add_payment_method

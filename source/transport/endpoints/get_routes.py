@@ -1,11 +1,13 @@
 from . import (
     AccountRoutes,
-    Members
+    Members,
+    Payment
 )
 
 
 def get_routes():
     return (
         (AccountRoutes.as_view(), '/account'),
-        (Members.as_view(), '/members')
+        (Members.as_view(), '/members'),
+        (Payment.as_view(), '/payment')
     )
