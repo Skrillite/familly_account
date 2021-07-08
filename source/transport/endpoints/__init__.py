@@ -1,2 +1,2 @@
-from .account import Account
+from .account import AccountRoutes
 from .members import Members

@@ -4,6 +4,9 @@ from contextvars import ContextVar
 
 from configs import ApplicationConfigs
 from db.database import DataBase
+from db import queries
+from db.queries.queryDI import DBQueryDI
+from service.DI import DI
 
 
 def init_db_posgresql(database_context: ContextVar, test_db=False):
@@ -23,3 +26,15 @@ def init_db_posgresql(database_context: ContextVar, test_db=False):
     database = DataBase(engine)
 
     database_context.set(database)
+
+
+def init_di(di: ContextVar):
+    dbq = DBQueryDI()
+    dbq.create_account = queries.create_account
+    dbq.delete_account = queries.delete_account
+
+    extq = None
+
+    di.set(DI())
+    di.get().db_queries = dbq
+    di.get().external_queries = extq
