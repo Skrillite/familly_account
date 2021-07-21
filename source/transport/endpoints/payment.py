@@ -20,11 +20,11 @@ class Payment(HTTPMethodView):
 
         await add_payment_method(self.di, self.db.session_factory, data)
 
-        return raw('', status=201)
+        return raw("", status=201)
 
     async def delete(self, request: Request):
         data: PaymentMethod = PaymentMethod.parse_obj(request.json)
 
         await delete_payment_method(self.di, self.db.session_factory, data)
 
-        return raw('', status=200)
+        return raw("", status=200)

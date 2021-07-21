@@ -19,11 +19,7 @@ def init_db_posgresql(database_context: ContextVar, test_db=False):
         url = ApplicationConfigs.db.test_db_url
         pool_class = NullPool
 
-    engine = create_async_engine(
-        url,
-        pool_pre_ping=True,
-        poolclass=pool_class
-    )
+    engine = create_async_engine(url, pool_pre_ping=True, poolclass=pool_class)
 
     database = DataBase(engine)
 

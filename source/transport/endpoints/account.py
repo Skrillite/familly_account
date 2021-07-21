@@ -18,11 +18,11 @@ class AccountRoutes(HTTPMethodView):
         data: BaseRequestData = BaseRequestData.parse_obj(request.json)
 
         await create_account(self.di, self.db.session_factory, data)
-        return raw('', status=201)
+        return raw("", status=201)
 
     async def delete(self, request: Request):
         data: BaseRequestData = BaseRequestData.parse_obj(request.json)
 
         await delete_account(self.di, self.db.session_factory, data)
 
-        return raw('', status=200)
+        return raw("", status=200)

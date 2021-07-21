@@ -17,18 +17,21 @@ async def create_account(session: AsyncSession, data: BaseRequestData):
 
 async def delete_account(session: AsyncSession, data: BaseRequestData):
     async with session.begin():
-        account_id = select(DBMembers.account_id).where(DBMembers.user_id == data.requesting_user_id).scalar_subquery()
+        account_id = (
+            select(DBMembers.account_id)
+            .where(DBMembers.user_id == data.requesting_user_id)
+            .scalar_subquery()
+        )
 
         await session.execute(
             delete(DBPayment)
-                .where(DBPayment.account_id == DBMembers.account_id)
-                .where(DBMembers.user_id == data.requesting_user_id)
-                .execution_options(synchronize_session=False)
-        )
-
-        await session.execute(
-            delete(DBMembers).where(DBMembers.account_id == account_id)
+            .where(DBPayment.account_id == DBMembers.account_id)
+            .where(DBMembers.user_id == data.requesting_user_id)
             .execution_options(synchronize_session=False)
         )
 
-
+        await session.execute(
+            delete(DBMembers)
+            .where(DBMembers.account_id == account_id)
+            .execution_options(synchronize_session=False)
+        )

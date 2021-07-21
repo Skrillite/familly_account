@@ -31,7 +31,8 @@ target_metadata = BaseModel.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
-config.set_main_option('sqlalchemy.url', ApplicationConfigs.db.alembic_url)
+config.set_main_option("sqlalchemy.url", ApplicationConfigs.db.alembic_url)
+
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
@@ -71,9 +72,7 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

@@ -19,4 +19,3 @@ class DTODI:
     AccountID = AccountID
     ChangingUser = ChangingUser
     PaymentMethod = PaymentMethod
-
