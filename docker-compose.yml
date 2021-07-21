@@ -1,0 +1,37 @@
+version: '2'
+
+services:
+  test-postgres:
+    image: docker.io/bitnami/postgresql:11
+    volumes:
+      - 'postgres_data:/bitnami/postgresql'
+    environment:
+      - POSTGRESQL_USERNAME=user
+      - POSTGRESQL_PASSWORD=cc{test_fa_db_pass}
+      - POSTGRESQL_DATABASE=test_fa_db
+  family_account_service:
+    build: .
+    depends_on:
+      - test-postgres
+    ports:
+      - 8000:8000
+    environment:
+      - TEST_POSTGRES_DB=test_fa_db
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=cc{test_fa_db_pass}
+      - POSTGRES_HOST=test-postgres
+      - POSTGRES_PORT=5432
+
+      - HOST=localhost
+      - PORT=8000
+
+      - USER_SERVICE_HOST=localhost
+      - USER_SERVICE_PORT=9823
+
+      - PYTHONPATH=/family_account/source
+    volumes:
+      - .:/family_account
+
+volumes:
+  postgres_data:
+    driver: local
