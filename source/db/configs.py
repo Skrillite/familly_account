@@ -11,7 +11,7 @@ class PotgresConfig:
     user = os.getenv("POSTGRES_USER", "")
     password = os.getenv("POSTGRES_PASSWORD", "")
     host = os.getenv("POSTGRES_HOST", "localhost")
-    port = os.getenv("POSTRES_PORT", "5432")
+    port = os.getenv("POSTGRES_PORT", "5432")
     url = rf"postgresql+asyncpg://{user}:{password}@{host}:{port}/{name}"
 
     alembic_url = rf"postgresql+psycopg2://{user}:{password}@{host}:{port}/{name}"
